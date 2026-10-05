@@ -1,0 +1,6 @@
+target/
+**/*.rs.bk
+.envghost/
+.env.ghost
+*.log
+.DS_Store
