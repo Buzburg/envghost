@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use crate::honeytoken::HoneyGenerator;
 use crate::scanner::SecretScanner;
+use std::collections::HashMap;
 
 pub struct Virtualizer<'a> {
     scanner: &'a SecretScanner,
@@ -14,7 +14,7 @@ impl<'a> Virtualizer<'a> {
     /// Transforms an unmasked .env string into a safe, virtualized version with honey-tokens
     pub fn mask_env_content(&self, content: &str) -> (String, HashMap<String, String>) {
         let mut masked_lines = Vec::new();
-        let mut secret_map = HashMap::new(); // honey -> real
+        let mut secret_map = HashMap::new(); // environment variable name -> real value
 
         for line in content.lines() {
             if line.trim().is_empty() || line.trim_start().starts_with('#') {
@@ -40,11 +40,11 @@ impl<'a> Virtualizer<'a> {
                     || trimmed_v.starts_with("postgres://")
                     || trimmed_v.starts_with("mysql://");
 
-                if is_secret && trimmed_v.len() > 5 {
+                if is_secret && !trimmed_v.is_empty() {
                     let sec_type = self.scanner.classify_secret_type(trimmed_k, trimmed_v);
                     let honey = HoneyGenerator::generate(&sec_type, trimmed_k);
 
-                    secret_map.insert(honey.clone(), trimmed_v.to_string());
+                    secret_map.insert(trimmed_k.to_string(), trimmed_v.to_string());
                     masked_lines.push(format!("{}=\"{}\"", trimmed_k, honey));
                 } else {
                     masked_lines.push(line.to_string());

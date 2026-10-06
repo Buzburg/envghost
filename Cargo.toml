@@ -3,7 +3,7 @@ name = "envghost"
 version = "0.1.0"
 edition = "2021"
 authors = ["Buzburg AI <dev@buzburg.ai>"]
-description = "Zero-knowledge honey-credential virtualizer and secret enclave for AI coding agents."
+description = "Credential masking, OS-backed storage, and child-process output redaction."
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/buzburgai-arch/envghost"
 keywords = ["security", "secrets", "ai-agents", "honeytoken", "sandbox"]
@@ -16,6 +16,7 @@ serde_json = "1.0"
 regex = "1.11"
 colored = "2.1"
 sha2 = "0.10"
+keyring = "4.2"
 
 [dev-dependencies]
 tempfile = "3.17"

@@ -21,9 +21,13 @@ impl Enclave {
 
         println!(
             "{}",
-            format!("► [envghost enclave] Launching '{}' with {} injected secret(s)...", program, secrets.len())
-                .cyan()
-                .bold()
+            format!(
+                "► [envghost] Launching '{}' with {} injected secret(s)...",
+                program,
+                secrets.len()
+            )
+            .cyan()
+            .bold()
         );
 
         let mut cmd = Command::new(program);
@@ -40,17 +44,56 @@ impl Enclave {
         let mut stderr_str = String::from_utf8_lossy(&output.stderr).to_string();
 
         // Sanitize output: if child printed any real secret, redact it immediately
-        for (_, secret_val) in secrets {
-            if secret_val.len() > 5 {
-                stdout_str = stdout_str.replace(secret_val, "[REDACTED_BY_ENVGHOST]");
-                stderr_str = stderr_str.replace(secret_val, "[REDACTED_BY_ENVGHOST]");
-            }
-        }
+        stdout_str = redact(&stdout_str, secrets);
+        stderr_str = redact(&stderr_str, secrets);
 
         print!("{}", stdout_str);
         eprint!("{}", stderr_str);
 
         let exit_code = output.status.code().unwrap_or(-1);
         Ok(exit_code)
+    }
+}
+
+fn redact(text: &str, secrets: &HashMap<String, String>) -> String {
+    let mut values: Vec<&str> = secrets
+        .values()
+        .map(String::as_str)
+        .filter(|v| !v.is_empty())
+        .collect();
+    values.sort_unstable_by(|a, b| b.len().cmp(&a.len()).then_with(|| a.cmp(b)));
+    values.dedup();
+    let mut output = String::with_capacity(text.len());
+    let mut rest = text;
+    while !rest.is_empty() {
+        if let Some(value) = values.iter().find(|value| rest.starts_with(**value)) {
+            output.push_str("[REDACTED_BY_ENVGHOST]");
+            rest = &rest[value.len()..];
+        } else {
+            let ch = rest.chars().next().expect("nonempty input");
+            output.push(ch);
+            rest = &rest[ch.len_utf8()..];
+        }
+    }
+    output
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn redaction_handles_short_overlapping_unicode_and_empty_values() {
+        let secrets = HashMap::from([
+            ("short".into(), "a".into()),
+            ("long".into(), "abc".into()),
+            ("unicode".into(), "秘密".into()),
+            ("empty".into(), String::new()),
+            ("marker".into(), "REDACTED".into()),
+        ]);
+        assert_eq!(
+            redact("abc a 秘密!", &secrets),
+            "[REDACTED_BY_ENVGHOST] [REDACTED_BY_ENVGHOST] [REDACTED_BY_ENVGHOST]!"
+        );
     }
 }
