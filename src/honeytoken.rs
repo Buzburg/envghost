@@ -26,7 +26,9 @@ impl HoneyGenerator {
             SecretType::OpenAi => format!("sk-honey_{}_{}", short_hash, &hash[16..32]),
             SecretType::GitHubPat => format!("ghp_honey{}", &hash[..32]),
             SecretType::AwsAccessKey => format!("AKIAHONEY{}", &short_hash[..11].to_uppercase()),
-            SecretType::DatabaseUrl => format!("postgres://honey_user:honey_pass@localhost:5432/honey_db"),
+            SecretType::DatabaseUrl => {
+                "postgres://honey_user:honey_pass@localhost:5432/honey_db".to_string()
+            }
             SecretType::GenericToken => format!("ghost_token_{}", short_hash),
         }
     }

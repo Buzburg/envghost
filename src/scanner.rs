@@ -1,5 +1,5 @@
-use regex::Regex;
 use crate::honeytoken::SecretType;
+use regex::Regex;
 
 #[derive(Debug, Clone)]
 pub struct SecretFinding {
@@ -14,15 +14,30 @@ pub struct SecretScanner {
     patterns: Vec<(&'static str, Regex)>,
 }
 
+impl Default for SecretScanner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SecretScanner {
     pub fn new() -> Self {
         Self {
             patterns: vec![
-                ("Stripe Live Key", Regex::new(r"sk_live_[0-9a-zA-Z]{24,}").unwrap()),
-                ("OpenAI API Key", Regex::new(r"sk-(proj-)?[a-zA-Z0-9_-]{32,}").unwrap()),
+                (
+                    "Stripe Live Key",
+                    Regex::new(r"sk_live_[0-9a-zA-Z]{24,}").unwrap(),
+                ),
+                (
+                    "OpenAI API Key",
+                    Regex::new(r"sk-(proj-)?[a-zA-Z0-9_-]{32,}").unwrap(),
+                ),
                 ("GitHub PAT", Regex::new(r"ghp_[a-zA-Z0-9]{36}").unwrap()),
                 ("AWS Access Key", Regex::new(r"AKIA[0-9A-Z]{16}").unwrap()),
-                ("Database URI", Regex::new(r"postgres(ql)?://[^\s:]+:[^\s@]+@[^\s:]+:\d+/[^\s]+").unwrap()),
+                (
+                    "Database URI",
+                    Regex::new(r"postgres(ql)?://[^\s:]+:[^\s@]+@[^\s:]+:\d+/[^\s]+").unwrap(),
+                ),
             ],
         }
     }
@@ -37,7 +52,10 @@ impl SecretScanner {
                 let trimmed_v = v.trim().trim_matches('"').trim_matches('\'');
 
                 let upper_k = trimmed_k.to_uppercase();
-                if (upper_k.contains("KEY") || upper_k.contains("SECRET") || upper_k.contains("TOKEN") || upper_k.contains("PASSWORD"))
+                if (upper_k.contains("KEY")
+                    || upper_k.contains("SECRET")
+                    || upper_k.contains("TOKEN")
+                    || upper_k.contains("PASSWORD"))
                     && trimmed_v.len() > 6
                     && !trimmed_v.starts_with("ghost_")
                     && !trimmed_v.starts_with("honey_")
