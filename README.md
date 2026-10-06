@@ -2,7 +2,7 @@
 
 Credential masking, operating-system credential storage, and child-process output redaction.
 
-[![CI](https://github.com/buzburgai-arch/envghost/actions/workflows/ci.yml/badge.svg)](https://github.com/buzburgai-arch/envghost/actions)
+[![CI](https://github.com/Buzburg/envghost/actions/workflows/ci.yml/badge.svg)](https://github.com/Buzburg/envghost/actions)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](LICENSE)
 
 `envghost mask` creates a copy of an environment file with detected credentials replaced by synthetic tokens. It saves the real values under their environment variable names in the OS credential store. `envghost run` supplies those values to a trusted command and redacts exact matches in its captured standard output and error, including short secrets.
