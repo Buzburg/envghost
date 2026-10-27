@@ -19,7 +19,7 @@ use virtualizer::Virtualizer;
 #[derive(Parser)]
 #[command(name = "envghost")]
 #[command(about = "Credential masking, OS-backed storage, and child-process output redaction.")]
-#[command(version = "0.1.0")]
+#[command(version = "0.1.1")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,

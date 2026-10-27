@@ -21,8 +21,10 @@ jobs:
     - name: Test with an isolated Linux keyring
       if: runner.os == 'Linux'
       run: |
+        export XDG_DATA_HOME="$(mktemp -d)"
+        export GNOME_KEYRING_CONTROL="$XDG_DATA_HOME/control"
         dbus-run-session -- bash -euc '
-          printf "%s" "envghost-ci-only" | gnome-keyring-daemon --unlock --components=secrets
+          printf "%s" "envghost-ci-only" | gnome-keyring-daemon --unlock --components=secrets --control-directory="$GNOME_KEYRING_CONTROL"
           cargo test --locked
         '
     - name: Test Windows credential storage

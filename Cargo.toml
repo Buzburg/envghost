@@ -1,6 +1,6 @@
 [package]
 name = "envghost"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Buzburg AI <dev@buzburg.ai>"]
 description = "Credential masking, OS-backed storage, and child-process output redaction."

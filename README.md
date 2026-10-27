@@ -1,9 +1,6 @@
-# envghost 👻
+# Envghost 👻
 
-Credential masking, operating-system credential storage, and child-process output redaction.
-
-[![CI](https://github.com/Buzburg/envghost/actions/workflows/ci.yml/badge.svg)](https://github.com/Buzburg/envghost/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+**Keep the config. Hide the keys.**
 
 `envghost mask` creates a copy of an environment file with detected credentials replaced by synthetic tokens. It saves the real values under their environment variable names in the OS credential store. `envghost run` supplies those values to a trusted command and redacts exact matches in its captured standard output and error, including short secrets.
 
@@ -59,3 +56,5 @@ Integration tests use temporary project directories and synthetic OS credential 
 ## License
 
 Licensed under [MIT](LICENSE).
+
+See [release verification](RELEASE_VERIFICATION.md) for the release checks.
